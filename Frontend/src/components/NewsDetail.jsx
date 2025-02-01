@@ -42,11 +42,12 @@ const NewsDetail = ({ news }) => {
       {/* Article Content */}
       <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-xl overflow-hidden">
         {article.urlToImage && (
-          <div className="relative h-[400px] w-full">
+          <div className="relative w-full h-auto aspect-video">
             <img 
               src={article.urlToImage} 
               alt={article.title}
               className="w-full h-full object-cover"
+              loading="lazy"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
           </div>
