@@ -33,7 +33,7 @@ const NewsDetail = ({ news }) => {
       {/* Back Button */}
       <button
         onClick={() => navigate(-1)}
-        className="mb-6 flex items-center gap-2 text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-300 group"
+        className="mb-6 flex items-center gap-2 text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-300 group cursor-pointer"
       >
         <FiArrowLeft className="w-5 h-5 transform group-hover:-translate-x-1 transition-transform duration-300" />
         <span>Back to News</span>
@@ -91,6 +91,13 @@ const NewsDetail = ({ news }) => {
           >
             Read Full Article
           </a>
+          {/* Copy Link Button */}
+          <button
+            onClick={() => { navigator.clipboard.writeText(article.url); alert('Link copied!'); }}
+            className="inline-block mt-6 ml-4 px-6 py-3 bg-green-600 text-white rounded-full hover:bg-green-700 transition-colors duration-300 transform hover:scale-105 active:scale-95"
+          >
+            Copy Link
+          </button>
         </div>
       </div>
     </motion.div>

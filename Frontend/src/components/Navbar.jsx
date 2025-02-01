@@ -42,7 +42,7 @@ const Navbar = ({ darkMode, setDarkMode, setCategory }) => {
           <div className="relative">
             <button
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              className="flex items-center space-x-2 px-4 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 transition duration-300 shadow-sm min-w-[120px] justify-between"
+              className="flex items-center space-x-2 px-4 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 transition duration-300 shadow-sm min-w-[120px] justify-between cursor-pointer"
             >
               <span>{currentCategory}</span>
               <FiChevronDown className={`transform transition-transform duration-300 ${isDropdownOpen ? 'rotate-180' : ''}`} />
@@ -61,7 +61,12 @@ const Navbar = ({ darkMode, setDarkMode, setCategory }) => {
                     <button
                       key={category.value}
                       onClick={() => handleCategoryClick(category.value)}
-                      className="w-full text-left px-4 py-2 hover:bg-gray-100/90 dark:hover:bg-gray-700/90 text-gray-700 dark:text-gray-200 transition duration-200"
+                      // Highlight active category
+                      className={`w-full text-left px-4 py-2 transition duration-200 ${
+                        currentCategory === category.name
+                          ? 'bg-blue-600 text-white'
+                          : 'hover:bg-gray-100/90 dark:hover:bg-gray-700/90 text-gray-700 dark:text-gray-200'
+                      }`}
                     >
                       {category.name}
                     </button>

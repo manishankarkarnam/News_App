@@ -27,7 +27,21 @@ const NewsFeed = ({ news, loading, error }) => {
   }
 
   if (error) {
-    return <div className="text-red-500 text-center">Failed to load news. Please try again later.</div>;
+    return (
+      <div className="text-center p-8">
+        <div className="text-red-500 text-xl mb-4">Failed to load news. Please try again later.</div>
+        <button 
+          onClick={() => window.location.reload()} 
+          className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 cursor-pointer"
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
+
+  if (!news || news.length === 0) {
+    return <div className="text-center">No news articles found.</div>;
   }
 
   return (
@@ -45,6 +59,18 @@ const NewsFeed = ({ news, loading, error }) => {
               to={`/news/${index}`}
               className="block bg-white dark:bg-gray-800 rounded-3xl shadow-lg overflow-hidden transform transition-transform hover:scale-105"
             >
+              {/* New Image Section */}
+              {item.urlToImage ? (
+                <img
+                  src={item.urlToImage}
+                  alt={item.title}
+                  className="w-full h-48 object-cover"
+                />
+              ) : (
+                <div className="w-full h-48 flex items-center justify-center bg-gray-200 dark:bg-gray-700">
+                  <span className="text-gray-500">Image Source Not Available</span>
+                </div>
+              )}
               <div className="p-6">
                 <h2 className="text-xl font-semibold text-gray-800 dark:text-white">{item.title}</h2>
                 <p className="mt-2 text-gray-600 dark:text-gray-300 line-clamp-3">{item.description}</p>

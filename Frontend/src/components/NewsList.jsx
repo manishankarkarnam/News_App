@@ -14,11 +14,17 @@ const NewsList = ({ articles, loading, error }) => {
           to={`/article/${index}`}
           className="bg-white shadow-md rounded-lg overflow-hidden hover:shadow-lg transition duration-300"
         >
-          <img
-            src={article.urlToImage || 'https://via.placeholder.com/300'}
-            alt={article.title}
-            className="w-full h-48 object-cover"
-          />
+          {article.urlToImage ? (
+            <img
+              src={article.urlToImage}
+              alt={article.title}
+              className="w-full h-48 object-cover"
+            />
+          ) : (
+            <div className="w-full h-48 flex items-center justify-center bg-gray-200 dark:bg-gray-700">
+              <span className="text-gray-500">Image Source Not Available</span>
+            </div>
+          )}
           <div className="p-4">
             <h2 className="text-xl font-semibold mb-2">{article.title}</h2>
             <p className="text-gray-600">{article.description}</p>

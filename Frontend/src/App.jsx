@@ -18,20 +18,29 @@ const App = () => {
       setLoading(true);
       setError(false);
       try {
-        const response = await axios.get(
-          `https://newsapi.org/v2/top-headlines`,
-          {
-            params: {
-              country: 'us',
-              category: category,
-              apiKey: '75b545ed102a49328383a59b3f963e51',
-              pageSize: 100 // Get more articles per request
-            }
+        console.log('Fetching news for category:', category); // Debug log
+
+        const response = await axios.get('https://newsapi.org/v2/top-headlines', {
+          params: {
+            country: 'us',
+            category: category,
+            apiKey: 'ba724484ba4b4742b42abca3c2563b07',
+            pageSize: 100
           }
-        );
+        });
+
+        console.log('API Response:', response.data); // Debug log
+
+        if (!response.data.articles) {
+          throw new Error('No articles found in response');
+        }
+
         setNews(response.data.articles);
+        setError(false);
       } catch (err) {
+        console.error('Error fetching news:', err); // Debug log
         setError(true);
+        setNews([]);
       } finally {
         setLoading(false);
       }
