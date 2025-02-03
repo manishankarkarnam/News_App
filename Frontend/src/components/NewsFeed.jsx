@@ -9,11 +9,11 @@ const NewsFeed = ({ news, loading, error }) => {
 
   // Reset visibleNews when category changes
   useEffect(() => {
-    setVisibleNews(9);
+    setVisibleNews(15);
   }, [categoryName]);
 
   const handleShowMore = () => {
-    setVisibleNews(prev => prev + 6); // Load 6 more items when clicked
+    setVisibleNews(prev => prev + 12); // Load 6 more items when clicked
   };
 
   if (loading) {

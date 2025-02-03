@@ -11,31 +11,47 @@ const App = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
-  const [category, setCategory] = useState('general');
+  const [category, setCategory] = useState('news'); // Changed from 'general' to 'news'
 
   useEffect(() => {
     const fetchNews = async () => {
       setLoading(true);
       setError(false);
       try {
-        console.log('Fetching news for category:', category); // Debug log
+        if (category === 'news') {
+          // Fetch news from all categories
+          const categories = ['technology', 'business', 'finance', 'science'];
+          const promises = categories.map(cat => 
+            axios.get('https://newsapi.org/v2/top-headlines', {
+              params: {
+                country: 'us',
+                category: cat,
+                apiKey: 'ba724484ba4b4742b42abca3c2563b07',
+                pageSize: 25 // Reduced to get equal news from each category
+              }
+            })
+          );
 
-        const response = await axios.get('https://newsapi.org/v2/top-headlines', {
-          params: {
-            country: 'us',
-            category: category,
-            apiKey: 'ba724484ba4b4742b42abca3c2563b07',
-            pageSize: 100
+          const responses = await Promise.all(promises);
+          const allArticles = responses.flatMap(response => response.data.articles);
+          setNews(allArticles);
+        } else {
+          // Existing single category fetch
+          const response = await axios.get('https://newsapi.org/v2/top-headlines', {
+            params: {
+              country: 'us',
+              category: category,
+              apiKey: 'ba724484ba4b4742b42abca3c2563b07',
+              pageSize: 100
+            }
+          });
+
+          if (!response.data.articles) {
+            throw new Error('No articles found in response');
           }
-        });
 
-        console.log('API Response:', response.data); // Debug log
-
-        if (!response.data.articles) {
-          throw new Error('No articles found in response');
+          setNews(response.data.articles);
         }
-
-        setNews(response.data.articles);
         setError(false);
       } catch (err) {
         console.error('Error fetching news:', err); // Debug log
@@ -53,10 +69,8 @@ const App = () => {
     <Router>
       <div className={`${darkMode ? 'dark' : ''}`}>
         <div className="min-h-screen bg-gray-100 dark:bg-gray-900 dark:text-white">
-          {/* Navbar */}
           <Navbar darkMode={darkMode} setDarkMode={setDarkMode} setCategory={setCategory} />
-          {/* Main Content */}
-          <div className="container mx-auto px-4 py-8">
+          <div className="container mx-auto px-4 py-2"> {/* Changed from py-8 to py-2 */}
             <Routes>
               <Route path="/" element={<NewsFeed news={news} loading={loading} error={error} />} />
               <Route path="/:categoryName" element={<NewsFeed news={news} loading={loading} error={error} />} />
