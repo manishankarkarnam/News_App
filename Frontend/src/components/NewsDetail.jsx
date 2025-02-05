@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { FiArrowLeft, FiClock, FiGlobe } from 'react-icons/fi';
+import { FiClock, FiGlobe } from 'react-icons/fi';
 import { ChevronUp, ChevronDown, Share2, Copy } from 'lucide-react'; // updated import
 
 // Mock related articles data for demonstration
@@ -124,26 +124,17 @@ const NewsDetail = ({ news }) => {
       transition={{ duration: 0.5 }}
       className="max-w-7xl mx-auto px-4 py-4"
     >
-      {/* Back Button */}
-      <button
-        onClick={() => navigate(-1)}
-        className="mb-4 flex items-center gap-2 text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-300 cursor-pointer group"
-      >
-        <FiArrowLeft className="w-5 h-5 transform group-hover:-translate-x-1 transition-transform duration-300" />
-        <span>Back to News</span>
-      </button>
-
       {/* Desktop Layout with independent scrolls and vertical divider */}
       <div className="hidden lg:flex gap-8" style={{ height: 'calc(100vh - 120px)' }}>
         <main className="w-2/3 overflow-y-auto pr-4 scrollbar-none">
           {/* Main Article Content */}
-          <article className="bg-white dark:bg-gray-800 rounded-3xl shadow-xl overflow-hidden">
-            {article.urlToImage && (
-              <div className="relative w-full max-h-80 overflow-hidden">
+          <article className="bg-white dark:bg-gray-800 rounded-3xl shadow-xl">
+            {article.image && (
+              <div className="relative w-full h-64"> {/* Fixed height container */}
                 <img 
-                  src={article.urlToImage} 
+                  src={article.image} 
                   alt={article.title}
-                  className="w-full h-full object-contain"
+                  className="w-auto h-full mx-auto object-contain" // Changed to auto width, full height
                   loading="lazy"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
@@ -156,12 +147,6 @@ const NewsDetail = ({ news }) => {
                   <FiClock className="w-4 h-4" />
                   <span>{formatDate(article.publishedAt)}</span>
                 </div>
-                {article.source.name && (
-                  <div className="flex items-center gap-2">
-                    <FiGlobe className="w-4 h-4" />
-                    <span>{article.source.name}</span>
-                  </div>
-                )}
                 <div className="ml-auto flex gap-2">
                   <Share2 className="w-5 h-5 text-gray-600 dark:text-gray-300 cursor-pointer hover:text-blue-500 transition-colors duration-200" />
                   <Copy className="w-5 h-5 text-gray-600 dark:text-gray-300 cursor-pointer hover:text-blue-500 transition-colors duration-200" />
@@ -174,9 +159,6 @@ const NewsDetail = ({ news }) => {
               {/* Content */}
               <div className="prose dark:prose-invert max-w-none mb-6">
                 <p className="text-gray-600 dark:text-gray-300 text-base leading-relaxed mb-8">
-                  {article.description}
-                </p>
-                <p className="text-gray-600 dark:text-gray-300 text-base leading-relaxed">
                   {article.content}
                 </p>
               </div>
@@ -231,13 +213,13 @@ const NewsDetail = ({ news }) => {
       <div className="lg:hidden">
         <main>
           {/* Main Article Content */}
-          <article className="bg-white dark:bg-gray-800 rounded-3xl shadow-xl overflow-hidden">
-            {article.urlToImage && (
-              <div className="relative w-full max-h-80 overflow-hidden">
+          <article className="bg-white dark:bg-gray-800 rounded-3xl shadow-xl">
+            {article.image && (
+              <div className="relative w-full h-64"> {/* Fixed height container */}
                 <img 
-                  src={article.urlToImage} 
+                  src={article.image} 
                   alt={article.title}
-                  className="w-full h-full object-contain"
+                  className="w-auto h-full mx-auto object-contain" // Changed to auto width, full height
                   loading="lazy"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
@@ -250,12 +232,6 @@ const NewsDetail = ({ news }) => {
                   <FiClock className="w-4 h-4" />
                   <span>{formatDate(article.publishedAt)}</span>
                 </div>
-                {article.source.name && (
-                  <div className="flex items-center gap-2">
-                    <FiGlobe className="w-4 h-4" />
-                    <span>{article.source.name}</span>
-                  </div>
-                )}
                 <div className="ml-auto flex gap-2">
                   <Share2 className="w-5 h-5 text-gray-600 dark:text-gray-300 cursor-pointer hover:text-blue-500 transition-colors duration-200" />
                   <Copy className="w-5 h-5 text-gray-600 dark:text-gray-300 cursor-pointer hover:text-blue-500 transition-colors duration-200" />
@@ -268,9 +244,6 @@ const NewsDetail = ({ news }) => {
               {/* Content */}
               <div className="prose dark:prose-invert max-w-none mb-6">
                 <p className="text-gray-600 dark:text-gray-300 text-base leading-relaxed mb-8">
-                  {article.description}
-                </p>
-                <p className="text-gray-600 dark:text-gray-300 text-base leading-relaxed">
                   {article.content}
                 </p>
               </div>

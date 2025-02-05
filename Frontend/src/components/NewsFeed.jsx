@@ -59,24 +59,27 @@ const NewsFeed = ({ news, loading, error }) => {
               to={`/news/${index}`}
               className="block bg-white dark:bg-gray-800 rounded-3xl shadow-lg overflow-hidden transform transition-transform hover:scale-105"
             >
-              {/* New Image Section */}
-              {item.urlToImage ? (
+              {/* Image Section */}
+              {item.image ? (
                 <img
-                  src={item.urlToImage}
+                  src={item.image}
                   alt={item.title}
                   className="w-full h-48 object-cover"
                 />
               ) : (
                 <div className="w-full h-48 flex items-center justify-center bg-gray-200 dark:bg-gray-700">
-                  <span className="text-gray-500">Image Source Not Available</span>
+                  <span className="text-gray-500">Image Not Available</span>
                 </div>
               )}
-              <div className="p-6">
-                <h2 className="text-xl font-semibold text-gray-800 dark:text-white">{item.title}</h2>
-                <p className="mt-2 text-gray-600 dark:text-gray-300 line-clamp-3">{item.description}</p>
-                <span className="mt-4 inline-block px-3 py-1 text-sm font-semibold text-blue-600 bg-blue-100 dark:bg-blue-900 dark:text-blue-300 rounded-full">
-                  {item.source.name}
+              <div className="p-4">
+                {/* Category Tag */}
+                <span className="inline-block px-3 py-1 text-sm font-medium text-blue-600 bg-blue-100 dark:bg-blue-900 dark:text-blue-300 rounded-full mb-2">
+                  {item.category}
                 </span>
+                {/* Headline */}
+                <h2 className="text-lg font-semibold text-gray-800 dark:text-white line-clamp-2">
+                  {item.title}
+                </h2>
               </div>
             </Link>
           </LazyLoad>

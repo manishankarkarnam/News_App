@@ -14,9 +14,9 @@ const NewsList = ({ articles, loading, error }) => {
           to={`/article/${index}`}
           className="bg-white shadow-md rounded-lg overflow-hidden hover:shadow-lg transition duration-300"
         >
-          {article.urlToImage ? (
+          {article.image ? (
             <img
-              src={article.urlToImage}
+              src={article.image}
               alt={article.title}
               className="w-full h-48 object-cover"
             />
