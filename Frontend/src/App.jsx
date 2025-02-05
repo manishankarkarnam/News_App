@@ -21,7 +21,8 @@ const App = () => {
         // Build backend API URL. If category is not 'news', add filter
         const url = `http://localhost:5000/api/articles${category !== 'news' ? `?category=${category}` : ''}`;
         const response = await axios.get(url);
-        setNews(response.data);
+        // Changed: set news to response.data.articles
+        setNews(response.data.articles);
       } catch (err) {
         console.error('Error fetching news:', err);
         setError(true);
