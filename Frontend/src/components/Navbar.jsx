@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { FiSearch, FiChevronDown } from 'react-icons/fi';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const Navbar = ({ setCategory }) => {
   const navigate = useNavigate();
@@ -83,7 +84,12 @@ const Navbar = ({ setCategory }) => {
   };
 
   return (
-    <nav className="bg-gray-800/10 backdrop-blur-lg shadow-md sticky top-0 z-50"> {/* Make dark mode permanent */}
+    <motion.nav 
+      initial={{ y: -100 }}
+      animate={{ y: 0 }}
+      transition={{ type: "spring", stiffness: 100 }}
+      className="bg-gray-800/10 backdrop-blur-lg shadow-md sticky top-0 z-50"
+    >
       {/* First Row - Logo only */}
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-center">
@@ -171,40 +177,48 @@ const Navbar = ({ setCategory }) => {
               </form>
 
               {/* Dropdown Search Results */}
-              {showResults && searchResults.length > 0 && (
-                <div className="absolute mt-2 w-full bg-gray-800 rounded-lg shadow-xl border border-gray-700 z-50 max-h-96 overflow-y-auto">
-                  {searchResults.slice(0, 5).map((article) => (
-                    <div
-                      key={article._id}
-                      onClick={() => handleResultClick(article._id)}
-                      className="p-4 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer border-b border-gray-200 dark:border-gray-700"
-                    >
-                      <h3 className="text-sm font-medium text-gray-800 dark:text-white">
-                        {article.title}
-                      </h3>
-                      <p className="text-xs text-gray-500 mt-1">
-                        {article.category} • {new Date(article.publishedAt).toLocaleDateString()}
-                      </p>
-                    </div>
-                  ))}
-                  {searchResults.length > 5 && (
-                    <div 
-                      className="p-3 text-center text-sm text-blue-600 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        handleSearchSubmit(e);
-                      }}
-                    >
-                      See all {searchResults.length} results
-                    </div>
-                  )}
-                </div>
-              )}
+              <AnimatePresence>
+                {showResults && searchResults.length > 0 && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.2 }}
+                    className="absolute mt-2 w-full bg-gray-800 rounded-lg shadow-xl border border-gray-700 z-50 max-h-96 overflow-y-auto"
+                  >
+                    {searchResults.slice(0, 5).map((article) => (
+                      <div
+                        key={article._id}
+                        onClick={() => handleResultClick(article._id)}
+                        className="p-4 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer border-b border-gray-200 dark:border-gray-700"
+                      >
+                        <h3 className="text-sm font-medium text-gray-800 dark:text-white">
+                          {article.title}
+                        </h3>
+                        <p className="text-xs text-gray-500 mt-1">
+                          {article.category} • {new Date(article.publishedAt).toLocaleDateString()}
+                        </p>
+                      </div>
+                    ))}
+                    {searchResults.length > 5 && (
+                      <div 
+                        className="p-3 text-center text-sm text-blue-600 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleSearchSubmit(e);
+                        }}
+                      >
+                        See all {searchResults.length} results
+                      </div>
+                    )}
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           </div>
         </div>
       </div>
-    </nav>
+    </motion.nav>
   );
 };
 

@@ -1,19 +1,61 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import LazyLoad from 'react-lazyload';
 import SkeletonLoader from './SkeletonLoader';
+import { motion } from 'framer-motion';
 
 const NewsFeed = ({ news, loading, error }) => {
-  const [visibleNews, setVisibleNews] = useState(9);
+  const [visibleNews, setVisibleNews] = useState(12);
+  const loadingRef = useRef(null);
   const { categoryName } = useParams();
 
   // Reset visibleNews when category changes
   useEffect(() => {
-    setVisibleNews(15);
+    setVisibleNews(12);
   }, [categoryName]);
 
-  const handleShowMore = () => {
-    setVisibleNews(prev => prev + 12); // Load 6 more items when clicked
+  // Implement infinite scroll
+  const handleObserver = useCallback((entries) => {
+    const target = entries[0];
+    if (target.isIntersecting && visibleNews < news.length) {
+      setVisibleNews(prev => prev + 6);
+    }
+  }, [visibleNews, news.length]);
+
+  useEffect(() => {
+    const option = {
+      root: null,
+      rootMargin: "20px",
+      threshold: 0
+    };
+    const observer = new IntersectionObserver(handleObserver, option);
+    if (loadingRef.current) observer.observe(loadingRef.current);
+    
+    return () => {
+      if (loadingRef.current) observer.unobserve(loadingRef.current);
+    };
+  }, [handleObserver]);
+
+  const container = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const item = {
+    hidden: { opacity: 0, y: 20 },
+    show: { 
+      opacity: 1, 
+      y: 0,
+      transition: {
+        duration: 0.5,
+        ease: "easeOut"
+      }
+    }
   };
 
   if (loading) {
@@ -45,8 +87,13 @@ const NewsFeed = ({ news, loading, error }) => {
   }
 
   return (
-    <div className="space-y-8">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <motion.div 
+      className="space-y-8"
+      variants={container}
+      initial="hidden"
+      animate="show"
+    >
+      <motion.div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {news.slice(0, visibleNews).map((item) => (
           <LazyLoad 
              key={item._id}  // Change key to use _id
@@ -55,53 +102,61 @@ const NewsFeed = ({ news, loading, error }) => {
              once
              placeholder={<SkeletonLoader />}
           >
-            <Link
-              to={`/news/${item._id}`}  // Update link to use _id
-              className="block bg-white dark:bg-gray-800 rounded-3xl shadow-lg overflow-hidden transform transition-transform hover:scale-105"
+            <motion.div
+              variants={item}
+              whileHover={{ 
+                scale: 1.03,
+                transition: { duration: 0.2 }
+              }}
+              whileTap={{ scale: 0.98 }}
             >
-              {/* Image Section */}
-              {item.image ? (
-                <img
-                  src={item.image}
-                  alt={item.title}
-                  className="w-full h-48 object-cover"
-                />
-              ) : (
-                <div className="w-full h-48 flex items-center justify-center bg-gray-200 dark:bg-gray-700">
-                  <span className="text-gray-500">Image Not Available</span>
+              <Link
+                to={`/news/${item._id}`}  // Update link to use _id
+                className="block bg-white dark:bg-gray-800 rounded-3xl shadow-lg overflow-hidden transform transition-transform hover:scale-105"
+              >
+                {/* Image Section */}
+                {item.image ? (
+                  <img
+                    src={item.image}
+                    alt={item.title}
+                    className="w-full h-48 object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-48 flex items-center justify-center bg-gray-200 dark:bg-gray-700">
+                    <span className="text-gray-500">Image Not Available</span>
+                  </div>
+                )}
+                <div className="p-4">
+                  {/* Category Tag */}
+                  <span className="inline-block px-3 py-1 text-sm font-medium text-blue-600 bg-blue-100 dark:bg-blue-900 dark:text-blue-300 rounded-full mb-2">
+                    {item.category}
+                  </span>
+                  {/* Headline */}
+                  <h2 className="text-lg font-semibold text-gray-800 dark:text-white line-clamp-2">
+                    {item.title}
+                  </h2>
+                  {/* Published date and time */}
+                  <p className="text-xs text-gray-500 mt-1">
+                    {new Date(item.publishedAt).toLocaleString()}
+                  </p>
                 </div>
-              )}
-              <div className="p-4">
-                {/* Category Tag */}
-                <span className="inline-block px-3 py-1 text-sm font-medium text-blue-600 bg-blue-100 dark:bg-blue-900 dark:text-blue-300 rounded-full mb-2">
-                  {item.category}
-                </span>
-                {/* Headline */}
-                <h2 className="text-lg font-semibold text-gray-800 dark:text-white line-clamp-2">
-                  {item.title}
-                </h2>
-                {/* Published date and time */}
-                <p className="text-xs text-gray-500 mt-1">
-                  {new Date(item.publishedAt).toLocaleString()}
-                </p>
-              </div>
-            </Link>
+              </Link>
+            </motion.div>
           </LazyLoad>
         ))}
-      </div>
+      </motion.div>
       
-      {/* Show More Button */}
+      {/* Loading indicator */}
       {visibleNews < news.length && (
-        <div className="flex justify-center">
-          <button
-            onClick={handleShowMore}
-            className="px-6 py-3 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition duration-300 transform hover:scale-105 active:scale-95 cursor-pointer"
-          >
-            Show More
-          </button>
+        <div ref={loadingRef} className="flex justify-center py-4">
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+            className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full"
+          />
         </div>
       )}
-    </div>
+    </motion.div>
   );
 };
 
