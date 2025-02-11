@@ -1,9 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { FiSearch, FiChevronDown } from 'react-icons/fi';
-import ThemeToggle from './ThemeToggle';
 
-const Navbar = ({ darkMode, setDarkMode, setCategory }) => {
+const Navbar = ({ setCategory }) => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('news');
@@ -84,22 +83,18 @@ const Navbar = ({ darkMode, setDarkMode, setCategory }) => {
   };
 
   return (
-    <nav className="bg-white/10 dark:bg-gray-800/10 backdrop-blur-lg shadow-md sticky top-0 z-50">
-      {/* First Row - Logo and Theme Toggle */}
+    <nav className="bg-gray-800/10 backdrop-blur-lg shadow-md sticky top-0 z-50"> {/* Make dark mode permanent */}
+      {/* First Row - Logo only */}
       <div className="container mx-auto px-4 py-4">
-        <div className="flex items-center justify-between">
-          <div className="flex-1" /> {/* Spacer */}
-          <div className="text-3xl font-bold text-gray-800 dark:text-white text-center">
+        <div className="flex items-center justify-center">
+          <div className="text-3xl font-bold text-white">
             NewsApp
-          </div>
-          <div className="flex-1 flex justify-end">
-            <ThemeToggle darkMode={darkMode} setDarkMode={setDarkMode} />
           </div>
         </div>
       </div>
 
       {/* Second Row - Categories and Search */}
-      <div className="border-t border-gray-200 dark:border-gray-700">
+      <div className="border-t border-gray-700">
         <div className="container mx-auto px-4 py-2">
           <div className="flex items-center justify-between space-x-4">
             {/* Categories - Desktop */}
@@ -113,9 +108,9 @@ const Navbar = ({ darkMode, setDarkMode, setCategory }) => {
                     navigate(category.value === 'news' ? '/' : `/${category.value}`);
                   }}
                   className={`px-4 py-1 rounded-full text-sm whitespace-nowrap transition-colors duration-200 cursor-pointer
-                    ${(activeCategory === category.value || (category.value === 'news' && window.location.pathname === '/'))
+                    ${activeCategory === category.value
                       ? 'bg-blue-500 text-white' 
-                      : 'hover:bg-gray-200 dark:hover:bg-gray-700'
+                      : 'hover:bg-gray-700 text-gray-200'
                     }`}
                 >
                   {category.name}
@@ -127,14 +122,14 @@ const Navbar = ({ darkMode, setDarkMode, setCategory }) => {
             <div className="relative md:hidden" ref={mobileMenuRef}>
               <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="flex items-center space-x-2 px-4 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 transition duration-300"
+                className="flex items-center space-x-2 px-4 py-2 rounded-lg bg-gray-700 text-gray-200 hover:bg-gray-600 transition duration-300"
               >
                 <span>{categories.find(cat => cat.value === activeCategory)?.name || 'Select Category'}</span>
                 <FiChevronDown className={`transform transition-transform duration-200 ${isMobileMenuOpen ? 'rotate-180' : ''}`} />
               </button>
 
               {isMobileMenuOpen && (
-                <div className="absolute mt-2 py-2 w-auto bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 z-50">
+                <div className="absolute mt-2 py-2 w-auto bg-gray-800 rounded-lg shadow-xl border border-gray-700 z-50">
                   {categories.map((category) => (
                     <button
                       key={category.value}
@@ -165,7 +160,7 @@ const Navbar = ({ darkMode, setDarkMode, setCategory }) => {
                   value={searchQuery}
                   onChange={handleSearchChange}
                   placeholder="Search news..."
-                  className="w-full px-4 py-1.5 rounded-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:outline-none focus:border-blue-500"
+                  className="w-full px-4 py-1.5 rounded-full border border-gray-600 bg-gray-700 focus:outline-none focus:border-blue-500 text-white placeholder-gray-400"
                 />
                 <button
                   type="submit"
@@ -177,7 +172,7 @@ const Navbar = ({ darkMode, setDarkMode, setCategory }) => {
 
               {/* Dropdown Search Results */}
               {showResults && searchResults.length > 0 && (
-                <div className="absolute mt-2 w-full bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 z-50 max-h-96 overflow-y-auto">
+                <div className="absolute mt-2 w-full bg-gray-800 rounded-lg shadow-xl border border-gray-700 z-50 max-h-96 overflow-y-auto">
                   {searchResults.slice(0, 5).map((article) => (
                     <div
                       key={article._id}

@@ -11,7 +11,6 @@ const App = () => {
   const [news, setNews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
-  const [darkMode, setDarkMode] = useState(false);
   const [category, setCategory] = useState('news'); // default category
 
   useEffect(() => {
@@ -37,19 +36,17 @@ const App = () => {
 
   return (
     <Router>
-      <div className={`${darkMode ? 'dark' : ''}`}>
-        <div className="min-h-screen bg-gray-100 dark:bg-gray-900 dark:text-white">
-          <Navbar darkMode={darkMode} setDarkMode={setDarkMode} setCategory={setCategory} />
-          <div className="container mx-auto px-4 py-2">
-            <Routes>
-              <Route path="/" element={<NewsFeed news={news} loading={loading} error={error} />} />
-              <Route path="/:categoryName" element={<NewsFeed news={news} loading={loading} error={error} />} />
-              <Route path="/news/:id" element={<NewsDetail news={news} />} />
-              <Route path="/search" element={<SearchResults />} /> {/* Remove the articles prop */}
-            </Routes>
-          </div>
-          <BackToTopButton />
+      <div className="min-h-screen bg-gray-900 text-white"> {/* Make dark mode permanent */}
+        <Navbar setCategory={setCategory} />
+        <div className="container mx-auto px-4 py-2">
+          <Routes>
+            <Route path="/" element={<NewsFeed news={news} loading={loading} error={error} />} />
+            <Route path="/:categoryName" element={<NewsFeed news={news} loading={loading} error={error} />} />
+            <Route path="/news/:id" element={<NewsDetail news={news} />} />
+            <Route path="/search" element={<SearchResults />} /> {/* Remove the articles prop */}
+          </Routes>
         </div>
+        <BackToTopButton />
       </div>
     </Router>
   );
