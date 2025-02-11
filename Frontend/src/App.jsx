@@ -5,6 +5,7 @@ import NewsFeed from './components/NewsFeed';
 import NewsDetail from './components/NewsDetail';
 import axios from 'axios';
 import BackToTopButton from './components/BackToTopButton';
+import SearchResults from './components/SearchResults';
 
 const App = () => {
   const [news, setNews] = useState([]);
@@ -18,10 +19,10 @@ const App = () => {
       setLoading(true);
       setError(false);
       try {
-        // Build backend API URL. If category is not 'news', add filter
-        const url = `http://localhost:5000/api/articles${category !== 'news' ? `?category=${category}` : ''}`;
+        // When in news section, load all feeds (using a high limit) from all categories
+        const limitParam = category === 'news' ? '?limit=1000' : `?category=${category}`;
+        const url = `http://localhost:5000/api/articles${limitParam}`;
         const response = await axios.get(url);
-        // Changed: set news to response.data.articles
         setNews(response.data.articles);
       } catch (err) {
         console.error('Error fetching news:', err);
@@ -44,6 +45,7 @@ const App = () => {
               <Route path="/" element={<NewsFeed news={news} loading={loading} error={error} />} />
               <Route path="/:categoryName" element={<NewsFeed news={news} loading={loading} error={error} />} />
               <Route path="/news/:id" element={<NewsDetail news={news} />} />
+              <Route path="/search" element={<SearchResults />} /> {/* Remove the articles prop */}
             </Routes>
           </div>
           <BackToTopButton />

@@ -47,16 +47,16 @@ const NewsFeed = ({ news, loading, error }) => {
   return (
     <div className="space-y-8">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {news.slice(0, visibleNews).map((item, index) => (
+        {news.slice(0, visibleNews).map((item) => (
           <LazyLoad 
-             key={index} 
+             key={item._id}  // Change key to use _id
              height={200} 
              offset={100} 
              once
              placeholder={<SkeletonLoader />}
           >
             <Link
-              to={`/news/${index}`}
+              to={`/news/${item._id}`}  // Update link to use _id
               className="block bg-white dark:bg-gray-800 rounded-3xl shadow-lg overflow-hidden transform transition-transform hover:scale-105"
             >
               {/* Image Section */}
@@ -80,6 +80,10 @@ const NewsFeed = ({ news, loading, error }) => {
                 <h2 className="text-lg font-semibold text-gray-800 dark:text-white line-clamp-2">
                   {item.title}
                 </h2>
+                {/* Published date and time */}
+                <p className="text-xs text-gray-500 mt-1">
+                  {new Date(item.publishedAt).toLocaleString()}
+                </p>
               </div>
             </Link>
           </LazyLoad>

@@ -9,18 +9,24 @@ const Navbar = ({ darkMode, setDarkMode, setCategory }) => {
   const [activeCategory, setActiveCategory] = useState('news');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const mobileMenuRef = useRef(null);
+  const [searchResults, setSearchResults] = useState([]);
+  const [showResults, setShowResults] = useState(false);
+  const searchRef = useRef(null);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target)) {
         setIsMobileMenuOpen(false);
       }
+      if (searchRef.current && !searchRef.current.contains(event.target)) {
+        setShowResults(false);
+      }
     };
 
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
-
+ 
   const categories = [
     { name: 'News', value: 'news' },
     { name: 'Technology', value: 'technology' },
@@ -29,10 +35,48 @@ const Navbar = ({ darkMode, setDarkMode, setCategory }) => {
     { name: 'Science', value: 'science' }
   ];
 
-  const handleSearchSubmit = (e) => {
+  const handleSearch = async (query) => {
+    if (!query.trim()) {
+      setSearchResults([]);
+      setShowResults(false);
+      return;
+    }
+
+    try {
+      const response = await fetch(`http://localhost:5000/api/search?query=${encodeURIComponent(query)}`);
+      const data = await response.json();
+      setSearchResults(data.articles);
+      setShowResults(true);
+    } catch (error) {
+      console.error('Search error:', error);
+    }
+  };
+
+  const handleSearchSubmit = async (e) => {
     e.preventDefault();
-    console.log('Searching for:', searchQuery);
-    setSearchQuery('');
+    if (!searchQuery.trim()) return;
+
+    try {
+      const response = await fetch(`http://localhost:5000/api/search?query=${encodeURIComponent(searchQuery)}`);
+      const data = await response.json();
+      // Navigate to search results page with the data
+      navigate('/search', { state: { articles: data.articles, query: searchQuery } });
+      setShowResults(false);
+      setSearchQuery(''); // Reset search query after searching
+    } catch (error) {
+      console.error('Search error:', error);
+    }
+  };
+
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
+    handleSearch(e.target.value);
+  };
+
+  const handleResultClick = (articleId) => {
+    setShowResults(false);
+    setSearchQuery(''); // Reset search query after clicking a result
+    navigate(`/news/${articleId}`);
   };
 
   const handleSearchIconClick = () => {
@@ -114,25 +158,53 @@ const Navbar = ({ darkMode, setDarkMode, setCategory }) => {
             </div>
 
             {/* Search Bar */}
-            <div className="relative flex-1 max-w-md">
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    handleSearchSubmit(e);
-                  }
-                }}
-                placeholder="Search news..."
-                className="w-full px-4 py-1.5 rounded-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:outline-none focus:border-blue-500"
-              />
-              <button
-                onClick={handleSearchIconClick}
-                className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-600 transition-all duration-200 cursor-pointer group"
-              >
-                <FiSearch className="w-4 h-4 text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300" />
-              </button>
+            <div ref={searchRef} className="relative flex-1 max-w-md">
+              <form onSubmit={handleSearchSubmit}>
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={handleSearchChange}
+                  placeholder="Search news..."
+                  className="w-full px-4 py-1.5 rounded-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:outline-none focus:border-blue-500"
+                />
+                <button
+                  type="submit"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                >
+                  <FiSearch />
+                </button>
+              </form>
+
+              {/* Dropdown Search Results */}
+              {showResults && searchResults.length > 0 && (
+                <div className="absolute mt-2 w-full bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 z-50 max-h-96 overflow-y-auto">
+                  {searchResults.slice(0, 5).map((article) => (
+                    <div
+                      key={article._id}
+                      onClick={() => handleResultClick(article._id)}
+                      className="p-4 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer border-b border-gray-200 dark:border-gray-700"
+                    >
+                      <h3 className="text-sm font-medium text-gray-800 dark:text-white">
+                        {article.title}
+                      </h3>
+                      <p className="text-xs text-gray-500 mt-1">
+                        {article.category} • {new Date(article.publishedAt).toLocaleDateString()}
+                      </p>
+                    </div>
+                  ))}
+                  {searchResults.length > 5 && (
+                    <div 
+                      className="p-3 text-center text-sm text-blue-600 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleSearchSubmit(e);
+                      }}
+                    >
+                      See all {searchResults.length} results
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         </div>
